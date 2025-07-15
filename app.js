@@ -39,13 +39,6 @@ app.get("/listings/new",(req,res) => {
   res.render("listings/new.ejs");
 });
 
-//show route
-app.get('/listings/:id', async (req, res) => {
-  let {id} = req.params;
-  const showListing = await Listing.findById(id);
-  res.render('listings/show.ejs', { showListing })
-});
-
 // create route 
 app.post("/listings",async (req,res) => {
     let listing = req.body.listing; 
@@ -53,6 +46,15 @@ app.post("/listings",async (req,res) => {
     await newListing.save(); 
     res.redirect("/listings"); 
 });
+
+//show route
+app.get('/listings/:id', async (req, res) => {
+  let {id} = req.params;
+  const showListing = await Listing.findById(id);
+  res.render('listings/show.ejs', { showListing })
+});
+
+
 
 //edit route
 app.get('/listings/:id/edit', async (req, res) => {
