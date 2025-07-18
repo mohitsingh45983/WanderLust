@@ -1,5 +1,4 @@
 <% layout('/layouts/boilerplate') -%>
-<body>
   <div class="row mt-3">
     <div class="col-8 offset-3">
       <h3>Listing Details</h3>
@@ -17,7 +16,7 @@
           <br />
           <%= showListing.description %>
           <br />
-          &#8377; <%= showListing.price.toLocaleString("en-IN")%>
+          &#8377; <%= showListing.price ? showListing.price.toLocaleString("en-IN") : "N/A" %>
           <br />
           <%= showListing.country %>
           <br />
@@ -41,4 +40,3 @@
       </form>
     </div>
   </div>
-</body>
