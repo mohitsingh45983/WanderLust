@@ -2,6 +2,7 @@ const express = require('express')
 const app = express()
 const mongoose = require('mongoose')
 const Listing = require('./model/listing.js')
+const Review = require('./model/review.js')
 const path = require('path')
 const MONGO_URL = 'mongodb://127.0.0.1:27017/wanderlust'
 const methodOverride = require('method-override')
@@ -111,7 +112,20 @@ app.delete(
     await Listing.findByIdAndDelete(id)
     res.redirect('/listings')
   })
-)
+);
+
+
+//Reviews
+//post Route
+app.post("/listings/:id/reviews",async (req,res) =>{
+  let listing = await Listing.findById(req.params.id);
+  let newReview = new Review(req.body.review);
+  listing.reviews.push(newReview);
+  await newReview.save();
+  await listing.save();
+  res.redirect(`/listings/${listing._id}`);
+});
+
 
 // Catch all unmatched routes
 app.use((req, res, next) => {
