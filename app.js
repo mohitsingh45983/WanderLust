@@ -85,7 +85,7 @@ app.get(
   '/listings/:id',
   wrapAsync(async (req, res) => {
     let { id } = req.params
-    const showListing = await Listing.findById(id)
+    const showListing = await Listing.findById(id).populate('reviews')
     res.render('listings/show.ejs', { showListing })
   })
 )
@@ -123,14 +123,29 @@ app.delete(
 
 //Reviews
 //post Route
-app.post('/listings/:id/reviews', validateReview, wrapAsync( async (req, res) => {
-  let listing = await Listing.findById(req.params.id)
-  let newReview = new Review(req.body.review)
-  listing.reviews.push(newReview)
-  await newReview.save()
-  await listing.save()
-  res.redirect(`/listings/${listing._id}`)
-}));
+app.post(
+  '/listings/:id/reviews',
+  validateReview,
+  wrapAsync(async (req, res) => {
+    let listing = await Listing.findById(req.params.id)
+    let newReview = new Review(req.body.review)
+    listing.reviews.push(newReview)
+    await newReview.save()
+    await listing.save()
+    res.redirect(`/listings/${listing._id}`)
+  })
+)
+
+//delete review route
+app.delete(
+  '/listings/:id/reviews/:reviewId',
+  wrapAsync(async (req, res) => {
+    let { id, reviewId } = req.params;
+    await Listing.findByIdAndUpdate(id,{$pull: {reviews : reviewId}});
+    await Review.findByIdAndDelete(reviewId);
+    res.redirect(`/listings/${id}`);
+  })
+);
 
 // Catch all unmatched routes
 app.use((req, res, next) => {
