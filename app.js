@@ -9,7 +9,7 @@ const methodOverride = require('method-override')
 const ejsMate = require('ejs-mate')
 const wrapAsync = require('./utils/wrapAsync.js')
 const ExpressError = require('./utils/ExpressError.js')
-const listingSchema = require("./schema.js")
+const { listingSchema, reviewSchema } = require('./schema.js')
 
 main()
   .then(() => {
@@ -37,14 +37,21 @@ app.get('/', (req, res) => {
   res.send('working')
 })
 
-const validateListing = (req,res,next) =>{
-    let {error} = listingSchema.validate(req.body);
-    if(error)
-    {
-      let errMsg = error.datails.map((el) => el.message).join(",");
-      throw new ExpressError(400,errMsg);
-    }
-    else next();
+// server side validation of forms
+const validateListing = (req, res, next) => {
+  let { error } = listingSchema.validate(req.body)
+  if (error) {
+    let errMsg = error.datails.map((el) => el.message).join(',')
+    throw new ExpressError(400, errMsg)
+  } else next()
+}
+
+const validateReview = (req, res, next) => {
+  let { error } = reviewSchema.validate(req.body)
+  if (error) {
+    let errMsg = error.datails.map((el) => el.message).join(',')
+    throw new ExpressError(400, errMsg)
+  } else next()
 }
 
 //Index Route
@@ -66,10 +73,10 @@ app.post(
   '/listings',
   validateListing,
   wrapAsync(async (req, res) => {
-    let listing = req.body.listing;
-    let newListing = new Listing(listing);
-    await newListing.save();
-    res.redirect('/listings');
+    let listing = req.body.listing
+    let newListing = new Listing(listing)
+    await newListing.save()
+    res.redirect('/listings')
   })
 )
 
@@ -112,20 +119,18 @@ app.delete(
     await Listing.findByIdAndDelete(id)
     res.redirect('/listings')
   })
-);
-
+)
 
 //Reviews
 //post Route
-app.post("/listings/:id/reviews",async (req,res) =>{
-  let listing = await Listing.findById(req.params.id);
-  let newReview = new Review(req.body.review);
-  listing.reviews.push(newReview);
-  await newReview.save();
-  await listing.save();
-  res.redirect(`/listings/${listing._id}`);
-});
-
+app.post('/listings/:id/reviews', validateReview, wrapAsync( async (req, res) => {
+  let listing = await Listing.findById(req.params.id)
+  let newReview = new Review(req.body.review)
+  listing.reviews.push(newReview)
+  await newReview.save()
+  await listing.save()
+  res.redirect(`/listings/${listing._id}`)
+}));
 
 // Catch all unmatched routes
 app.use((req, res, next) => {
@@ -134,8 +139,8 @@ app.use((req, res, next) => {
 
 // ERROR HANDLER — must be last
 app.use((err, req, res, next) => {
-  const { statusCode = 500, message = 'Something went wrong!' } = err;
-  res.status(statusCode).render("listings/error.ejs",{message});
+  const { statusCode = 500, message = 'Something went wrong!' } = err
+  res.status(statusCode).render('listings/error.ejs', { message })
 })
 
 app.listen(8080, (req, res) => {
