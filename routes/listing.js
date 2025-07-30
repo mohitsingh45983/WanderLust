@@ -35,11 +35,12 @@ router.post(
   isLoggedIn,
   validateListing,
   wrapAsync(async (req, res) => {
-    let listing = req.body.listing
-    let newListing = new Listing(listing)
-    await newListing.save()
-    req.flash('success', 'New Listing Created!')
-    res.redirect('/listings')
+    let listing = req.body.listing;
+    let newListing = new Listing(listing);
+    newListing.owner = req.user._id;
+    await newListing.save();
+    req.flash('success', 'New Listing Created!');
+    res.redirect('/listings');
   })
 )
 

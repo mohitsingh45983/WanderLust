@@ -6,7 +6,7 @@ const passport = require('passport')
 const { saveRedirectUrl } = require('../middleware.js')
 
 router.get('/signup', (req, res) => {
-  res.render('users/signup.ejs')
+  res.render('users/signup.ejs');
 })
 
 router.post(
@@ -34,8 +34,8 @@ router.post(
 );
 
 router.get('/login', (req, res) => {
-  res.render('users/login.ejs')
-})
+  res.render('users/login.ejs');
+});
 
 router.post(
   '/login',
@@ -49,16 +49,16 @@ router.post(
     let redirectUrl = res.locals.redirectUrl || "/listings";
     res.redirect(redirectUrl);
   })
-)
+);
 
 router.get('/logout', (req, res, next) => {
   req.logout((err) => {
     if (err) {
-      return next(err)
+      return next(err);
     }
-    req.flash('success', 'You are logged out successfully!')
-    res.redirect('/listings')
+    req.flash('success', 'You are logged out successfully!');
+    res.redirect('/listings');
   })
-})
+});
 
-module.exports = router
+module.exports = router;
