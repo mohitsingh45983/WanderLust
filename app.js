@@ -8,9 +8,12 @@ const ejsMate = require('ejs-mate')
 const ExpressError = require('./utils/ExpressError.js')
 const session = require('express-session')
 const flash = require('connect-flash')
+const passport = require('passport')
+const LocalStrategy = require('passport-local')
+const User = require('./model/user.js')
 
-const listings = require("./routes/listing.js")
-const reviews = require("./routes/review.js")
+const listings = require('./routes/listing.js')
+const reviews = require('./routes/review.js')
 
 main()
   .then(() => {
@@ -35,34 +38,52 @@ app.use(express.static(path.join(__dirname, '/public')))
 app.engine('ejs', ejsMate)
 
 const sessionOptions = {
-  secret : "mysupersecretCode",
+  secret: 'mysupersecretCode',
   resave: false,
   saveUninitialized: true,
-  cookie :{
+  cookie: {
     expires: Date.now() + 1000 * 60 * 60 * 24 * 7, // 1 week
-    maxAge : 1000 * 60 * 60 * 24 * 7, // 1 week
+    maxAge: 1000 * 60 * 60 * 24 * 7, // 1 week
     httpOnly: true, // helps prevent XSS attacks
-  }
-};
+  },
+}
 
 app.get('/', (req, res) => {
   res.send('working')
 })
 
 app.use(session(sessionOptions));
-app.use(flash());  //use flash before routes
+app.use(flash()); //use flash before routes
 
-app.use((req,res,next) => {
-  res.locals.success = req.flash("success");
-  res.locals.error = req.flash("error");
+// use passport after session middleware
+app.use(passport.initialize());
+app.use(passport.session()); //for identifying users in same session using different tabs
+passport.use(new LocalStrategy(User.authenticate()));
+
+passport.serializeUser(User.serializeUser())
+passport.deserializeUser(User.deserializeUser())
+
+app.use((req, res, next) => {
+  res.locals.success = req.flash('success');
+  res.locals.error = req.flash('error');
   next();
 });
 
+app.get("/demoUser" , async(req,res)=>{
+  let DemoUser = new User({
+    email: " newUser.gmail.com",
+    username : "Mohit",
+  });
+
+  let registeredUser = await User.register(DemoUser,"helloWorld");
+  res.send(registeredUser);    
+});
+
 //listings route
-app.use("/listings",listings);
+app.use('/listings', listings)
 
 //reviews route
-app.use("/listings/:id/reviews",reviews);
+app.use('/listings/:id/reviews', reviews)
 
 // Catch all unmatched routes
 app.use((req, res, next) => {
