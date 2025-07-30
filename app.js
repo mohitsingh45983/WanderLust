@@ -1,20 +1,20 @@
-const express = require('express');
-const app = express();
-const mongoose = require('mongoose');
-const path = require('path');
-const MONGO_URL = 'mongodb://127.0.0.1:27017/wanderlust';
-const methodOverride = require('method-override');
-const ejsMate = require('ejs-mate');
-const ExpressError = require('./utils/ExpressError.js');
-const session = require('express-session');
-const flash = require('connect-flash');
-const passport = require('passport');
-const LocalStrategy = require('passport-local');
-const User = require('./model/user.js');
+const express = require('express')
+const app = express()
+const mongoose = require('mongoose')
+const path = require('path')
+const MONGO_URL = 'mongodb://127.0.0.1:27017/wanderlust'
+const methodOverride = require('method-override')
+const ejsMate = require('ejs-mate')
+const ExpressError = require('./utils/ExpressError.js')
+const session = require('express-session')
+const flash = require('connect-flash')
+const passport = require('passport')
+const LocalStrategy = require('passport-local')
+const User = require('./model/user.js')
 
-const listingRouter = require('./routes/listing.js');
-const reviewRouter= require('./routes/review.js');
-const userRouter = require('./routes/user.js');
+const listingRouter = require('./routes/listing.js')
+const reviewRouter = require('./routes/review.js')
+const userRouter = require('./routes/user.js')
 
 main()
   .then(() => {
@@ -53,32 +53,22 @@ app.get('/', (req, res) => {
   res.send('working')
 })
 
-app.use(session(sessionOptions));
-app.use(flash()); //use flash before routes
+app.use(session(sessionOptions))
+app.use(flash()) //use flash before routes
 
 // use passport after session middleware
-app.use(passport.initialize());
-app.use(passport.session()); //for identifying users in same session using different tabs
-passport.use(new LocalStrategy(User.authenticate()));
+app.use(passport.initialize())
+app.use(passport.session()) //for identifying users in same session using different tabs
+passport.use(new LocalStrategy(User.authenticate()))
 
 passport.serializeUser(User.serializeUser())
 passport.deserializeUser(User.deserializeUser())
 
 app.use((req, res, next) => {
-  res.locals.success = req.flash('success');
-  res.locals.error = req.flash('error');
-  next();
-});
-
-// app.get("/demoUser" , async(req,res)=>{
-//   let DemoUser = new User({
-//     email: " newUser.gmail.com",
-//     username : "Mohit",
-//   });
-
-//   let registeredUser = await User.register(DemoUser,"helloWorld");
-//   res.send(registeredUser);    
-// });
+  res.locals.success = req.flash('success')
+  res.locals.error = req.flash('error')
+  next()
+})
 
 //listings route
 app.use('/listings', listingRouter)
@@ -86,8 +76,8 @@ app.use('/listings', listingRouter)
 //reviews route
 app.use('/listings/:id/reviews', reviewRouter)
 
-// user route 
-app.use("/",userRouter);
+// user route
+app.use('/', userRouter)
 
 // Catch all unmatched routes
 app.use((req, res, next) => {
