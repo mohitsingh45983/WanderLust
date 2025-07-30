@@ -6,6 +6,7 @@ const MONGO_URL = 'mongodb://127.0.0.1:27017/wanderlust'
 const methodOverride = require('method-override')
 const ejsMate = require('ejs-mate')
 const ExpressError = require('./utils/ExpressError.js')
+const session = require('express-session')
 
 const listings = require("./routes/listing.js")
 const reviews = require("./routes/review.js")
@@ -31,6 +32,19 @@ app.use(methodOverride('_method'))
 app.use(express.static(path.join(__dirname, '/public')))
 
 app.engine('ejs', ejsMate)
+
+const sessionOptions = {
+  secret : "mysupersecretCode",
+  resave: false,
+  saveUninitialized: true,
+  cookie :{
+    expires: Date.now() + 1000 * 60 * 60 * 24 * 7, // 1 week
+    maxAge : 1000 * 60 * 60 * 24 * 7, // 1 week
+    httpOnly: true, // helps prevent XSS attacks
+  }
+};
+
+app.use(session(sessionOptions));
 
 app.get('/', (req, res) => {
   res.send('working')
