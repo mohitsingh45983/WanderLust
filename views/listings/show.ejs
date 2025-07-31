@@ -11,8 +11,8 @@
       alt="listing_image"
     />
     <div class="card-body">
-      <p class="card-text">Owned by <b> 
-        #<i><%= showListing.owner.username %></i></b>
+      <p class="card-text">
+        Owned by <b> #<i><%= showListing.owner.username %></i></b>
       </p>
       <p class="card-text"><%= showListing.description %></p>
       <p class="card-text">
@@ -37,7 +37,9 @@
     </form>
   </div>
   <% } %>
+
   <div class="col-8 offset-3 mt-5 mb-3">
+    <% if(currUser){ %>
     <h4>Leave a Review</h4>
     <form
       method="POST"
@@ -72,15 +74,15 @@
 
       <button class="btn btn-outline-dark">Submit</button>
     </form>
-
     <hr />
+    <% } %>
 
     <p><b>All Reviews</b></p>
     <div class="row">
       <% for(review of showListing.reviews){ %>
       <div class="card col-5 ms-3 mb-3">
         <div class="card-body">
-          <h5 class="card-title">John Doe</h5>
+          <h5 class="card-title">@<%= review.author.username %></h5>
           <p class="card-text"><%= review.comment %></p>
           <p class="card-text"><%= review.rating %> stars</p>
         </div>
