@@ -11,20 +11,20 @@
       alt="listing_image"
     />
     <div class="card-body">
+      <p class="card-text">Owned by <b> 
+        #<i><%= showListing.owner.username %></i></b>
+      </p>
+      <p class="card-text"><%= showListing.description %></p>
       <p class="card-text">
-        <br />
-        <%= showListing.description %>
-        <br />
         &#8377; <%= showListing.price ?
         showListing.price.toLocaleString("en-IN") : "N/A" %>
-        <br />
-        <%= showListing.country %>
-        <br />
-        <%= showListing.location %>
       </p>
+      <p class="card-text"><%= showListing.country %></p>
+      <p class="card-text"><%= showListing.location %></p>
     </div>
   </div>
 
+  <% if(currUser && currUser._id.equals(showListing.owner._id)){ %>
   <div class="btns">
     <a
       href="/listings/<%= showListing._id%>/edit"
@@ -36,7 +36,7 @@
       <button class="btn btn-dark offset-4">Delete</button>
     </form>
   </div>
-
+  <% } %>
   <div class="col-8 offset-3 mt-5 mb-3">
     <h4>Leave a Review</h4>
     <form
@@ -85,8 +85,12 @@
           <p class="card-text"><%= review.rating %> stars</p>
         </div>
 
-        <form method="post" action="/listings/<%= showListing._id%>/reviews/<%=review._id %>?_method=DELETE" class="mb-3">
-          <button class="btn btn-dark btn-sm">Delete </button>
+        <form
+          method="post"
+          action="/listings/<%= showListing._id%>/reviews/<%=review._id %>?_method=DELETE"
+          class="mb-3"
+        >
+          <button class="btn btn-dark btn-sm">Delete</button>
         </form>
       </div>
       <% } %>
