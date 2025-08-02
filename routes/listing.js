@@ -4,25 +4,29 @@ const wrapAsync = require('../utils/wrapAsync.js')
 const { isLoggedIn, isOwner, validateListing } = require('../middleware.js')
 const listingController = require('../controllers/listing.js')
 
-//Index Route
-router.get('/', wrapAsync(listingController.index))
+router
+  .route('/')
+  //Index Route
+  .get(wrapAsync(listingController.index))
+  // create route
+  .post(isLoggedIn, validateListing, wrapAsync(listingController.createListing))
 
 //new route
 router.get('/new', isLoggedIn, listingController.renderNewForm)
 
-// create route
-router.post(
-  '/',
-  isLoggedIn,
-  validateListing,
-  wrapAsync(listingController.createListing)
-)
-
-//show route
-router.get(
-  '/:id',
-  wrapAsync(listingController.showListing)
-)
+router
+  .route('/:id')
+  //show route
+  .get(wrapAsync(listingController.showListing))
+  // update  route
+  .put(
+    isLoggedIn,
+    isOwner,
+    validateListing,
+    wrapAsync(listingController.updateListing)
+  )
+  // delete route
+  .delete(isLoggedIn, isOwner, wrapAsync(listingController.deleteListing))
 
 //edit route
 router.get(
@@ -30,23 +34,6 @@ router.get(
   isLoggedIn,
   isOwner,
   wrapAsync(listingController.editListing)
-)
-
-// update  route
-router.put(
-  '/:id',
-  isLoggedIn,
-  isOwner,
-  validateListing,
-  wrapAsync(listingController.updateListing)
-)
-
-// delete route
-router.delete(
-  '/:id',
-  isLoggedIn,
-  isOwner,
-  wrapAsync(listingController.deleteListing)
 )
 
 module.exports = router
