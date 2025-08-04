@@ -1,4 +1,9 @@
 <% layout('/layouts/boilerplate') -%>
+<script>
+  const mapToken = '<%=process.env.MAP_TOKEN %>'
+  const coordinates = <%- JSON.stringify(showListing.geometry.coordinates) %>;
+</script>
+
 <div class="row mt-3">
   <div class="col-8 offset-3">
     <h3><%= showListing.title %></h3>
@@ -38,8 +43,9 @@
   </div>
   <% } %>
 
-  <div class="col-8 offset-3 mt-5 mb-3">
+  <div class="col-8 offset-3 mt-3 mb-3">
     <% if(currUser){ %>
+    <hr />
     <h4>Leave a Review</h4>
     <form
       method="POST"
@@ -113,10 +119,9 @@
       <button class="btn btn-outline-dark">Submit</button>
     </form>
     <hr />
-    <% } %>
-
-    <p><b>All Reviews</b></p>
+    <% } %> <% if(showListing.reviews.length > 0){ %>
     <div class="row">
+      <p><b>All Reviews</b></p>
       <% for (review of showListing.reviews) { %>
       <div class="card col-5 ms-3 mb-3">
         <div class="card-body">
@@ -140,5 +145,13 @@
       </div>
       <% } %>
     </div>
+    <% } %>
+  </div>
+
+  <div class="col-8 offset-3 mb-3 mb-3">
+    <h3>Where you will be</h3>
+    <div id="map"></div>
   </div>
 </div>
+
+<script src="/js/map.js"></script>
